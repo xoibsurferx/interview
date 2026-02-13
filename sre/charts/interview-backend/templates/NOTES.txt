@@ -1,0 +1,5 @@
+Ingress:
+  http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+
+Endpoint:
+  GET {{ .Values.probes.path }}
