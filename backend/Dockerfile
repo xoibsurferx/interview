@@ -2,25 +2,25 @@
     FROM maven:3.9-eclipse-temurin-8 AS build
     WORKDIR /app
     
+    # Cache deps
     COPY pom.xml .
     RUN mvn -B -q -DskipTests dependency:go-offline
     
+    # Build
     COPY src ./src
     RUN mvn -B -DskipTests package
     
-    # ---- runtime stage ----
-    FROM eclipse-temurin:8-jre
-    
-    RUN useradd -r -u 10001 -g root appuser
+    # ---- runtime stage (distroless, nonroot) ----
+    # Distroless reduces OS package surface area => typically far fewer CVEs
+    FROM gcr.io/distroless/java8-debian11:nonroot
     
     WORKDIR /app
     COPY --from=build /app/target/*.jar /app/app.jar
     
-    # Java often needs /tmp writable even with read-only root FS
-    RUN mkdir -p /tmp && chown -R 10001:0 /tmp
-    
-    USER 10001
+    # Expose app port
     EXPOSE 8080
+    
+    # Container-friendly JVM flags
     ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
     
     ENTRYPOINT ["java","-jar","/app/app.jar"]
