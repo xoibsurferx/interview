@@ -4,6 +4,17 @@ metadata:
   name: {{ include "interview-backend.fullname" . }}
   labels:
     {{- include "interview-backend.labels" . | nindent 4 }}
+  {{- if or .Values.metrics.enabled (not (empty .Values.service.annotations)) }}
+  annotations:
+    {{- if .Values.metrics.enabled }}
+    prometheus.io/scrape: "true"
+    prometheus.io/path: {{ .Values.metrics.path }}
+    prometheus.io/port: "{{ .Values.metrics.port }}"
+    {{- end }}
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   selector:

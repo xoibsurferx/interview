@@ -13,6 +13,7 @@ service:
   type: ClusterIP
   port: 80
   targetPort: 8080
+  annotations: {}
 
 ingress:
   enabled: true
@@ -34,6 +35,8 @@ podSecurityContext:
   runAsUser: 10001
   fsGroup: 2000
 
+podAnnotations: {}
+
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
@@ -42,11 +45,21 @@ securityContext:
       - ALL
 
 probes:
-  path: /api/welcome
+  path: /actuator/health
   initialDelaySeconds: 15
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 6
+
+metrics:
+  enabled: true
+  path: /actuator/prometheus
+  port: 8080
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels: {}
 
 autoscaling:
   enabled: true
@@ -60,4 +73,7 @@ pdb:
 
 networkPolicy:
   enabled: true
+  ingressNamespaces:
+    - ingress-nginx
+    - monitoring
 

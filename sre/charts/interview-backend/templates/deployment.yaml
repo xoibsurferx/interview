@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         {{- include "interview-backend.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ default (include "interview-backend.fullname" .) .Values.serviceAccount.name }}
       securityContext:
