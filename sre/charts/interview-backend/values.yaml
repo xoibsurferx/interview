@@ -3,6 +3,7 @@ replicaCount: 2
 image:
   repository: docker.io/xoibsurferx/tekmetric-interview-backend
   tag: latest
+  digest: ""
   pullPolicy: Always
 
 serviceAccount:
@@ -21,6 +22,7 @@ ingress:
   host: backend.localtest.me
   path: /
   pathType: Prefix
+  tls: []
 
 resources:
   requests:
@@ -50,6 +52,14 @@ probes:
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 6
+
+startupProbe:
+  enabled: true
+  path: /actuator/health
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 30
 
 metrics:
   enabled: true
