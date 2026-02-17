@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/xoibsurferx/interview.git
-    targetRevision: sre-prodlike-demo
+    targetRevision: master
     path: sre/charts/interview-backend
 
   destination:
